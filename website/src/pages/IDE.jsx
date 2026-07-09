@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import TopBar from "../components/TopBar";
+import EditorTabs from "../components/EditorTabs";
 import Editor from "../components/Editor";
 import Preview from "../components/Preview";
 import Terminal from "../components/Terminal";
@@ -19,7 +20,7 @@ export default function IDE(){
 
   const [files,setFiles]=useState(()=>{
     const data=localStorage.getItem("sandbox-workspace");
-    return data?JSON.parse(data):DEFAULT_FILES;
+    return data ? JSON.parse(data) : DEFAULT_FILES;
   });
 
   useEffect(()=>{
@@ -28,49 +29,6 @@ export default function IDE(){
       JSON.stringify(files)
     );
   },[files]);
-
-  const saveWorkspace=()=>{
-    localStorage.setItem(
-      "sandbox-workspace",
-      JSON.stringify(files)
-    );
-    alert("Workspace saved");
-  };
-
-  const exportWorkspace=()=>{
-    const blob=new Blob(
-      [JSON.stringify(files,null,2)],
-      {type:"application/json"}
-    );
-
-    const url=URL.createObjectURL(blob);
-
-    const a=document.createElement("a");
-    a.href=url;
-    a.download="workspace.json";
-    a.click();
-
-    URL.revokeObjectURL(url);
-  };
-
-  const importWorkspace=(e)=>{
-    const file=e.target.files[0];
-    if(!file) return;
-
-    const reader=new FileReader();
-
-    reader.onload=()=>{
-      try{
-        const data=JSON.parse(reader.result);
-        setFiles(data);
-        setCurrent(Object.keys(data)[0]);
-      }catch{
-        alert("File không hợp lệ");
-      }
-    };
-
-    reader.readAsText(file);
-  };
 
   const preview=`
 <!DOCTYPE html>
@@ -85,48 +43,81 @@ ${files["index.html"]||""}
 </html>`;
 
   return(
-    <div style={{display:"flex",flexDirection:"column",height:"100vh"}}>
+    <div
+      style={{
+        display:"flex",
+        flexDirection:"column",
+        height:"100vh",
+      }}
+    >
 
       <TopBar
         createFile={()=>{}}
-        saveWorkspace={saveWorkspace}
+        saveWorkspace={()=>{}}
         runPreview={()=>setTab("preview")}
-        exportWorkspace={exportWorkspace}
-        importWorkspace={importWorkspace}
+        exportWorkspace={()=>{}}
+        importWorkspace={()=>{}}
       />
 
-      <div style={{display:"flex",flex:1}}>
+      <div
+        style={{
+          display:"flex",
+          flex:1,
+        }}
+      >
 
         <Sidebar
           files={files}
+          folders={[]}
           current={current}
           setCurrent={setCurrent}
           createFile={()=>{}}
+          createFolder={()=>{}}
           renameFile={()=>{}}
           deleteFile={()=>{}}
         />
 
-        <div style={{flex:1}}>
-          <Editor
-            language={
-              current.endsWith(".css")
-              ?"css"
-              :current.endsWith(".js")
-              ?"javascript"
-              :"html"
-            }
-            code={files[current]}
-            setCode={(v)=>setFiles({
-              ...files,
-              [current]:v
-            })}
+        <div
+          style={{
+            flex:1,
+            display:"flex",
+            flexDirection:"column",
+          }}
+        >
+
+          <EditorTabs
+            files={files}
+            current={current}
+            setCurrent={setCurrent}
           />
+
+          <div style={{flex:1}}>
+            <Editor
+              language={
+                current.endsWith(".css")
+                ?"css"
+                :current.endsWith(".js")
+                ?"javascript"
+                :"html"
+              }
+              code={files[current]}
+              setCode={(v)=>setFiles({
+                ...files,
+                [current]:v,
+              })}
+            />
+          </div>
+
         </div>
 
-        <div style={{width:"40%"}}>
-          {tab==="preview"&&<Preview html={preview}/>}
-          {tab==="terminal"&&<Terminal/>}
-          {tab==="ai"&&<AIChat/>}
+        <div
+          style={{
+            width:"40%",
+          }}
+        >
+          {tab==="preview" && <Preview html={preview}/>}
+          {tab==="terminal" && <Terminal/>}
+          {tab==="ai" && <AIChat/>}
         </div>
 
       </div>
