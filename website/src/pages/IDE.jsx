@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import TopBar from "../components/TopBar";
 import Editor from "../components/Editor";
 import Preview from "../components/Preview";
 import Terminal from "../components/Terminal";
@@ -13,9 +14,8 @@ const DEFAULT_FILES = {
 
 export default function IDE(){
 
-  const [drawer,setDrawer]=useState(false);
-  const [tab,setTab]=useState("preview");
   const [current,setCurrent]=useState("index.html");
+  const [tab,setTab]=useState("preview");
 
   const [files,setFiles]=useState(()=>{
     const data=localStorage.getItem("sandbox-workspace");
@@ -29,48 +29,47 @@ export default function IDE(){
     );
   },[files]);
 
-  const createFile=()=>{
-    const name=prompt("Tên file");
-
-    if(!name||files[name]) return;
-
-    setFiles({
-      ...files,
-      [name]:"",
-    });
-
-    setCurrent(name);
+  const saveWorkspace=()=>{
+    localStorage.setItem(
+      "sandbox-workspace",
+      JSON.stringify(files)
+    );
+    alert("Workspace saved");
   };
 
-  const deleteFile=(name)=>{
-    if(!confirm("Xóa "+name+" ?")) return;
+  const exportWorkspace=()=>{
+    const blob=new Blob(
+      [JSON.stringify(files,null,2)],
+      {type:"application/json"}
+    );
 
-    const next={...files};
-    delete next[name];
+    const url=URL.createObjectURL(blob);
 
-    setFiles(next);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="workspace.json";
+    a.click();
 
-    if(current===name){
-      setCurrent(Object.keys(next)[0]||"");
-    }
+    URL.revokeObjectURL(url);
   };
 
-  const renameFile=(oldName)=>{
-    const newName=prompt("Tên mới",oldName);
+  const importWorkspace=(e)=>{
+    const file=e.target.files[0];
+    if(!file) return;
 
-    if(!newName||newName===oldName||files[newName]) return;
+    const reader=new FileReader();
 
-    const next={};
+    reader.onload=()=>{
+      try{
+        const data=JSON.parse(reader.result);
+        setFiles(data);
+        setCurrent(Object.keys(data)[0]);
+      }catch{
+        alert("File không hợp lệ");
+      }
+    };
 
-    Object.keys(files).forEach(key=>{
-      next[key===oldName?newName:key]=files[key];
-    });
-
-    setFiles(next);
-
-    if(current===oldName){
-      setCurrent(newName);
-    }
+    reader.readAsText(file);
   };
 
   const preview=`
@@ -85,13 +84,53 @@ ${files["index.html"]||""}
 </body>
 </html>`;
 
-  return (
-    <div>
-      {/* Giữ nguyên phần giao diện hiện tại */}
+  return(
+    <div style={{display:"flex",flexDirection:"column",height:"100vh"}}>
 
-      {/* Khi gọi Sidebar nhớ truyền thêm: */}
-      {/* deleteFile={deleteFile} */}
-      {/* renameFile={renameFile} */}
+      <TopBar
+        createFile={()=>{}}
+        saveWorkspace={saveWorkspace}
+        runPreview={()=>setTab("preview")}
+        exportWorkspace={exportWorkspace}
+        importWorkspace={importWorkspace}
+      />
+
+      <div style={{display:"flex",flex:1}}>
+
+        <Sidebar
+          files={files}
+          current={current}
+          setCurrent={setCurrent}
+          createFile={()=>{}}
+          renameFile={()=>{}}
+          deleteFile={()=>{}}
+        />
+
+        <div style={{flex:1}}>
+          <Editor
+            language={
+              current.endsWith(".css")
+              ?"css"
+              :current.endsWith(".js")
+              ?"javascript"
+              :"html"
+            }
+            code={files[current]}
+            setCode={(v)=>setFiles({
+              ...files,
+              [current]:v
+            })}
+          />
+        </div>
+
+        <div style={{width:"40%"}}>
+          {tab==="preview"&&<Preview html={preview}/>}
+          {tab==="terminal"&&<Terminal/>}
+          {tab==="ai"&&<AIChat/>}
+        </div>
+
+      </div>
+
     </div>
   );
 }
