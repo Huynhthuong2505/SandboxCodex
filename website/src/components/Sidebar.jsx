@@ -3,8 +3,8 @@ export default function Sidebar({
   current,
   setCurrent,
   createFile,
-  deleteFile,
   renameFile,
+  deleteFile,
 }) {
   return (
     <aside
@@ -12,6 +12,7 @@ export default function Sidebar({
         height: "100%",
         background: "#111827",
         color: "#fff",
+        padding: 10,
         overflow: "auto",
       }}
     >
@@ -19,53 +20,59 @@ export default function Sidebar({
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
-          padding: 10,
-          borderBottom: "1px solid #333",
+          marginBottom: 12,
         }}
       >
         <b>EXPLORER</b>
 
-        <button onClick={createFile}>+</button>
+        <button onClick={createFile}>
+          +
+        </button>
       </div>
 
       {Object.keys(files).map((name) => (
         <div
           key={name}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            padding: 8,
             background:
               current === name
                 ? "#374151"
                 : "transparent",
+            borderRadius: 6,
+            marginBottom: 6,
+            padding: 8,
           }}
         >
-          <span
-            style={{
-              flex: 1,
-              cursor: "pointer",
-            }}
+          <div
             onClick={() => setCurrent(name)}
+            style={{
+              cursor: "pointer",
+              marginBottom: 6,
+            }}
           >
             📄 {name}
-          </span>
+          </div>
 
-          <button
-            onClick={() => renameFile(name)}
-            title="Rename"
+          <div
+            style={{
+              display: "flex",
+              gap: 6,
+            }}
           >
-            ✏️
-          </button>
+            <button
+              style={{ flex: 1 }}
+              onClick={() => renameFile(name)}
+            >
+              ✏
+            </button>
 
-          <button
-            onClick={() => deleteFile(name)}
-            title="Delete"
-          >
-            🗑️
-          </button>
+            <button
+              style={{ flex: 1 }}
+              onClick={() => deleteFile(name)}
+            >
+              🗑
+            </button>
+          </div>
         </div>
       ))}
     </aside>
