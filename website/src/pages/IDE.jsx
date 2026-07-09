@@ -7,9 +7,9 @@ import Preview from "../components/Preview";
 import Terminal from "../components/Terminal";
 import AIChat from "../components/AIChat";
 
-const DEFAULT_FILES = {
+const DEFAULT_FILES={
   "index.html":"<h1>Hello Sandbox CodeX</h1>",
-  "style.css":"body{background:#111;color:#fff;font-family:sans-serif}",
+  "style.css":"body{background:#111;color:#fff}",
   "script.js":"console.log('Sandbox CodeX');",
 };
 
@@ -17,10 +17,11 @@ export default function IDE(){
 
   const [current,setCurrent]=useState("index.html");
   const [tab,setTab]=useState("preview");
+  const [openTabs,setOpenTabs]=useState(["index.html"]);
 
   const [files,setFiles]=useState(()=>{
     const data=localStorage.getItem("sandbox-workspace");
-    return data ? JSON.parse(data) : DEFAULT_FILES;
+    return data?JSON.parse(data):DEFAULT_FILES;
   });
 
   useEffect(()=>{
@@ -29,6 +30,30 @@ export default function IDE(){
       JSON.stringify(files)
     );
   },[files]);
+
+  const openFile=(name)=>{
+    if(!openTabs.includes(name)){
+      setOpenTabs([...openTabs,name]);
+    }
+    setCurrent(name);
+  };
+
+  const closeTab=(name)=>{
+
+    const next=openTabs.filter(t=>t!==name);
+
+    if(next.length===0){
+      setOpenTabs([]);
+      setCurrent("");
+      return;
+    }
+
+    if(current===name){
+      setCurrent(next[next.length-1]);
+    }
+
+    setOpenTabs(next);
+  };
 
   const preview=`
 <!DOCTYPE html>
@@ -43,13 +68,7 @@ ${files["index.html"]||""}
 </html>`;
 
   return(
-    <div
-      style={{
-        display:"flex",
-        flexDirection:"column",
-        height:"100vh",
-      }}
-    >
+    <div style={{display:"flex",flexDirection:"column",height:"100vh"}}>
 
       <TopBar
         createFile={()=>{}}
@@ -59,18 +78,13 @@ ${files["index.html"]||""}
         importWorkspace={()=>{}}
       />
 
-      <div
-        style={{
-          display:"flex",
-          flex:1,
-        }}
-      >
+      <div style={{display:"flex",flex:1}}>
 
         <Sidebar
           files={files}
           folders={[]}
           current={current}
-          setCurrent={setCurrent}
+          setCurrent={openFile}
           createFile={()=>{}}
           createFolder={()=>{}}
           renameFile={()=>{}}
@@ -86,9 +100,10 @@ ${files["index.html"]||""}
         >
 
           <EditorTabs
-            files={files}
+            openTabs={openTabs}
             current={current}
             setCurrent={setCurrent}
+            closeTab={closeTab}
           />
 
           <div style={{flex:1}}>
@@ -100,7 +115,7 @@ ${files["index.html"]||""}
                 ?"javascript"
                 :"html"
               }
-              code={files[current]}
+              code={files[current]||""}
               setCode={(v)=>setFiles({
                 ...files,
                 [current]:v,
@@ -110,11 +125,7 @@ ${files["index.html"]||""}
 
         </div>
 
-        <div
-          style={{
-            width:"40%",
-          }}
-        >
+        <div style={{width:"40%"}}>
           {tab==="preview" && <Preview html={preview}/>}
           {tab==="terminal" && <Terminal/>}
           {tab==="ai" && <AIChat/>}
