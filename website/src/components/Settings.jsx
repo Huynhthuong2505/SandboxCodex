@@ -1,112 +1,107 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export default function Settings({
-  visible,
-  close,
-}){
+export default function Settings(){
 
   const [theme,setTheme]=useState(
     localStorage.getItem("editor-theme")||"vs-dark"
   );
 
   const [fontSize,setFontSize]=useState(
-    Number(localStorage.getItem("editor-font-size")||15)
+    Number(localStorage.getItem("editor-font-size"))||15
   );
 
   const [autoSave,setAutoSave]=useState(
     localStorage.getItem("editor-autosave")==="true"
   );
 
-  useEffect(()=>{
-    localStorage.setItem("editor-theme",theme);
-  },[theme]);
+  const save=()=>{
 
-  useEffect(()=>{
-    localStorage.setItem("editor-font-size",fontSize);
-  },[fontSize]);
+    localStorage.setItem(
+      "editor-theme",
+      theme
+    );
 
-  useEffect(()=>{
-    localStorage.setItem("editor-autosave",autoSave);
-  },[autoSave]);
+    localStorage.setItem(
+      "editor-font-size",
+      fontSize
+    );
 
-  if(!visible) return null;
+    localStorage.setItem(
+      "editor-autosave",
+      autoSave
+    );
+
+    alert("Settings saved");
+
+  };
 
   return(
+
     <div
-      onClick={close}
       style={{
-        position:"fixed",
-        inset:0,
-        background:"rgba(0,0,0,.45)",
-        display:"flex",
-        justifyContent:"center",
-        alignItems:"center",
-        zIndex:9999,
+        padding:16,
+        height:"100%",
+        background:"#111827",
+        color:"#fff",
       }}
     >
 
-      <div
-        onClick={(e)=>e.stopPropagation()}
-        style={{
-          width:"92%",
-          maxWidth:420,
-          background:"#1f2937",
-          color:"#fff",
-          borderRadius:10,
-          padding:20,
-        }}
+      <h3>⚙ Settings</h3>
+
+      <p>Theme</p>
+
+      <select
+        value={theme}
+        onChange={(e)=>setTheme(e.target.value)}
       >
+        <option value="vs-dark">
+          Dark
+        </option>
 
-        <h3>Editor Settings</h3>
+        <option value="light">
+          Light
+        </option>
 
-        <p>Theme</p>
+        <option value="hc-black">
+          High Contrast
+        </option>
 
-        <select
-          value={theme}
-          onChange={(e)=>setTheme(e.target.value)}
-        >
-          <option value="vs-dark">VS Dark</option>
-          <option value="light">Light</option>
-          <option value="hc-black">High Contrast</option>
-        </select>
+      </select>
 
-        <p>Font Size</p>
+      <p>Font Size</p>
 
-        <input
-          type="range"
-          min="12"
-          max="30"
-          value={fontSize}
-          onChange={(e)=>setFontSize(Number(e.target.value))}
-        />
+      <input
+        type="number"
+        value={fontSize}
+        min="10"
+        max="40"
+        onChange={(e)=>setFontSize(Number(e.target.value))}
+      />
 
-        <div>
-          {fontSize}px
-        </div>
+      <p>
 
-        <p>
-          <label>
+        <label>
 
-            <input
-              type="checkbox"
-              checked={autoSave}
-              onChange={(e)=>setAutoSave(e.target.checked)}
-            />
+          <input
+            type="checkbox"
+            checked={autoSave}
+            onChange={(e)=>setAutoSave(e.target.checked)}
+          />
 
-            Auto Save
+          Auto Save
 
-          </label>
-        </p>
+        </label>
 
-        <button
-          onClick={close}
-        >
-          Close
-        </button>
+      </p>
 
-      </div>
+      <button
+        onClick={save}
+      >
+        Save Settings
+      </button>
 
     </div>
+
   );
 
 }
