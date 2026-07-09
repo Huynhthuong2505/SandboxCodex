@@ -1,44 +1,68 @@
 import { useEffect, useRef } from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
+import { WebContainer } from "@webcontainer/api";
+
 import "xterm/css/xterm.css";
 
 export default function AppTerminal() {
-  const terminalRef = useRef(null);
+  const ref = useRef(null);
 
   useEffect(() => {
-    const term = new Terminal({
-      cursorBlink: true,
-      theme: {
-        background: "#111827",
-        foreground: "#f8fafc",
-      },
-    });
+    let term;
 
-    const fitAddon = new FitAddon();
+    async function boot() {
+      term = new Terminal({
+        cursorBlink: true,
+        theme: {
+          background: "#111827",
+          foreground: "#f8fafc",
+        },
+      });
 
-    term.loadAddon(fitAddon);
-    term.open(terminalRef.current);
-    fitAddon.fit();
+      const fit = new FitAddon();
 
-    term.writeln("Sandbox CodeX");
-    term.writeln("----------------------------");
-    term.writeln("$ npm run dev");
-    term.writeln("Ready.");
-    term.write("$ ");
+      term.loadAddon(fit);
+      term.open(ref.current);
+      fit.fit();
 
-    window.addEventListener("resize", () => fitAddon.fit());
+      term.writeln("🚀 Booting Sandbox CodeX...");
+      term.writeln("");
 
-    return () => term.dispose();
+      try {
+        const wc = await WebContainer.boot();
+
+        term.writeln("✅ WebContainer Ready");
+        term.writeln("$ node -v");
+
+        const proc = await wc.spawn("node", ["-v"]);
+
+        proc.output.pipeTo(
+          new WritableStream({
+            write(data) {
+              term.write(data);
+            },
+          })
+        );
+      } catch (e) {
+        term.writeln("");
+        term.writeln("❌ " + e.message);
+      }
+    }
+
+    boot();
+
+    return () => {
+      if (term) term.dispose();
+    };
   }, []);
 
   return (
     <div
-      ref={terminalRef}
+      ref={ref}
       style={{
-        height: "100%",
         width: "100%",
-        padding: "10px",
+        height: "100%",
       }}
     />
   );
