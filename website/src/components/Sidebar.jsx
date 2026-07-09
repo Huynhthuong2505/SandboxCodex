@@ -8,12 +8,10 @@ export default function Sidebar({
   return (
     <aside
       style={{
-        width: 220,
         height: "100%",
         background: "#111827",
         color: "#fff",
-        overflowY: "auto",
-        borderRight: "1px solid #222",
+        overflow: "auto",
       }}
     >
       <div
@@ -22,6 +20,7 @@ export default function Sidebar({
           justifyContent: "space-between",
           alignItems: "center",
           padding: 10,
+          borderBottom: "1px solid #333",
         }}
       >
         <b>EXPLORER</b>
@@ -36,9 +35,10 @@ export default function Sidebar({
           key={name}
           style={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
+            alignItems: "center",
             padding: "8px 10px",
+            cursor: "pointer",
             background:
               current === name
                 ? "#374151"
@@ -46,10 +46,7 @@ export default function Sidebar({
           }}
         >
           <span
-            style={{
-              cursor: "pointer",
-              flex: 1,
-            }}
+            style={{ flex: 1 }}
             onClick={() => setCurrent(name)}
           >
             📄 {name}
@@ -57,6 +54,9 @@ export default function Sidebar({
 
           <button
             onClick={() => deleteFile(name)}
+            style={{
+              marginLeft: 8,
+            }}
           >
             🗑
           </button>
