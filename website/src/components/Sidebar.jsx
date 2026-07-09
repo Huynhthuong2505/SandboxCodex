@@ -3,26 +3,25 @@ export default function Sidebar({
   current,
   setCurrent,
   createFile,
+  deleteFile,
 }) {
-  const list = Object.keys(files).sort();
-
   return (
     <aside
       style={{
-        background:"#111827",
-        color:"#fff",
-        height:"100%",
-        overflow:"auto",
-        borderRight:"1px solid #222",
+        width: 220,
+        height: "100%",
+        background: "#111827",
+        color: "#fff",
+        overflowY: "auto",
+        borderRight: "1px solid #222",
       }}
     >
       <div
         style={{
-          display:"flex",
-          justifyContent:"space-between",
-          alignItems:"center",
-          padding:"10px",
-          borderBottom:"1px solid #222"
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: 10,
         }}
       >
         <b>EXPLORER</b>
@@ -32,25 +31,35 @@ export default function Sidebar({
         </button>
       </div>
 
-      {list.map((name)=>(
+      {Object.keys(files).map((name) => (
         <div
           key={name}
-          onClick={()=>setCurrent(name)}
           style={{
-            padding:"8px 12px",
-            cursor:"pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "8px 10px",
             background:
-              current===name
-              ? "#374151"
-              : "transparent"
+              current === name
+                ? "#374151"
+                : "transparent",
           }}
         >
-          {name.endsWith(".html") && "🌐"}
-          {name.endsWith(".css") && "🎨"}
-          {name.endsWith(".js") && "📜"}
-          {!name.match(/\.(html|css|js)$/) && "📄"}
-          {" "}
-          {name}
+          <span
+            style={{
+              cursor: "pointer",
+              flex: 1,
+            }}
+            onClick={() => setCurrent(name)}
+          >
+            📄 {name}
+          </span>
+
+          <button
+            onClick={() => deleteFile(name)}
+          >
+            🗑
+          </button>
         </div>
       ))}
     </aside>
