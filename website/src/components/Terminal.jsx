@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { WebContainer } from "@webcontainer/api";
-
 import "xterm/css/xterm.css";
 
 export default function AppTerminal() {
@@ -14,15 +13,16 @@ export default function AppTerminal() {
     async function boot() {
       term = new Terminal({
         cursorBlink: true,
+        convertEol: true,
         theme: {
           background: "#111827",
-          foreground: "#f8fafc",
+          foreground: "#ffffff",
         },
       });
 
       const fit = new FitAddon();
-
       term.loadAddon(fit);
+
       term.open(ref.current);
       fit.fit();
 
@@ -32,10 +32,28 @@ export default function AppTerminal() {
       try {
         const wc = await WebContainer.boot();
 
-        term.writeln("✅ WebContainer Ready");
-        term.writeln("$ node -v");
+        await wc.mount({
+          "index.html": {
+            file: {
+              contents: "<h1>Hello Sandbox CodeX</h1>",
+            },
+          },
+          "style.css": {
+            file: {
+              contents: "body{font-family:Arial}",
+            },
+          },
+          "script.js": {
+            file: {
+              contents: "console.log('Sandbox CodeX');",
+            },
+          },
+        });
 
-        const proc = await wc.spawn("node", ["-v"]);
+        term.writeln("✅ Project mounted");
+        term.writeln("$ ls");
+
+        const proc = await wc.spawn("ls");
 
         proc.output.pipeTo(
           new WritableStream({
@@ -44,17 +62,15 @@ export default function AppTerminal() {
             },
           })
         );
-      } catch (e) {
+      } catch (err) {
         term.writeln("");
-        term.writeln("❌ " + e.message);
+        term.writeln(String(err));
       }
     }
 
     boot();
 
-    return () => {
-      if (term) term.dispose();
-    };
+    return () => term?.dispose();
   }, []);
 
   return (
