@@ -1,59 +1,125 @@
-export function exportWorkspace(files){
+import { useState } from "react";
 
-  const blob=new Blob(
-    [
-      JSON.stringify(files,null,2)
-    ],
-    {
-      type:"application/json"
-    }
+export default function WorkspaceManager({
+  files,
+  setFiles,
+}) {
+
+  const [name, setName] = useState("");
+
+  const workspaces = JSON.parse(
+    localStorage.getItem("workspaces") || "{}"
   );
 
-  const url=URL.createObjectURL(blob);
+  const saveWorkspace = () => {
 
-  const a=document.createElement("a");
+    if (!name.trim()) return;
 
-  a.href=url;
-  a.download="sandbox-workspace.json";
-  a.click();
-
-  URL.revokeObjectURL(url);
-}
-
-export function importWorkspace(setFiles){
-
-  const input=document.createElement("input");
-
-  input.type="file";
-  input.accept=".json";
-
-  input.onchange=(e)=>{
-
-    const file=e.target.files[0];
-
-    if(!file) return;
-
-    const reader=new FileReader();
-
-    reader.onload=()=>{
-
-      try{
-
-        setFiles(
-          JSON.parse(reader.result)
-        );
-
-      }catch{
-
-        alert("Workspace không hợp lệ");
-
-      }
-
+    const next = {
+      ...workspaces,
+      [name]: files,
     };
 
-    reader.readAsText(file);
+    localStorage.setItem(
+      "workspaces",
+      JSON.stringify(next)
+    );
+
+    alert("Workspace saved.");
 
   };
 
-  input.click();
+  const loadWorkspace = (workspace) => {
+
+    setFiles(workspaces[workspace]);
+
+  };
+
+  const removeWorkspace = (workspace) => {
+
+    delete workspaces[workspace];
+
+    localStorage.setItem(
+      "workspaces",
+      JSON.stringify(workspaces)
+    );
+
+    location.reload();
+
+  };
+
+  return (
+
+    <div
+      style={{
+        height: "100%",
+        background: "#111827",
+        color: "#fff",
+        padding: 12,
+      }}
+    >
+
+      <h3>📂 Workspace Manager</h3>
+
+      <input
+        placeholder="Workspace name..."
+        value={name}
+        onChange={(e)=>setName(e.target.value)}
+      />
+
+      <button
+        onClick={saveWorkspace}
+        style={{
+          marginLeft:10,
+        }}
+      >
+        Save
+      </button>
+
+      <hr/>
+
+      {
+
+        Object.keys(workspaces).map((item)=>(
+
+          <div
+            key={item}
+            style={{
+              display:"flex",
+              justifyContent:"space-between",
+              marginBottom:8,
+            }}
+          >
+
+            <span>{item}</span>
+
+            <div>
+
+              <button
+                onClick={()=>loadWorkspace(item)}
+              >
+                Open
+              </button>
+
+              <button
+                onClick={()=>removeWorkspace(item)}
+                style={{
+                  marginLeft:6,
+                }}
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </div>
+
+        ))
+
+      }
+
+    </div>
+
+  );
+
 }
