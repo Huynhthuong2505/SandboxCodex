@@ -1,106 +1,130 @@
 import { useState } from "react";
 
-export default function AIChat() {
-  const [messages, setMessages] = useState([
+export default function AIChat(){
+
+  const [messages,setMessages]=useState([
     {
-      role: "assistant",
-      text: "Xin chào 👋 Tôi là Sandbox AI.",
+      role:"assistant",
+      text:"Xin chào! Tôi là Sandbox AI.",
     },
   ]);
 
-  const [input, setInput] = useState("");
+  const [input,setInput]=useState("");
 
-  const send = () => {
-    if (!input.trim()) return;
+  const send=()=>{
 
-    setMessages((m) => [
-      ...m,
+    if(!input.trim()) return;
+
+    const user=input;
+
+    setMessages(v=>[
+      ...v,
       {
-        role: "user",
-        text: input,
+        role:"user",
+        text:user,
       },
       {
-        role: "assistant",
-        text: "AI chưa được kết nối API.",
+        role:"assistant",
+        text:"Đã nhận yêu cầu: "+user,
       },
     ]);
 
     setInput("");
+
   };
 
-  return (
+  return(
+
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        background: "#0f172a",
+        height:"100%",
+        display:"flex",
+        flexDirection:"column",
+        background:"#111827",
+        color:"#fff",
       }}
     >
+
       <div
         style={{
-          flex: 1,
-          overflow: "auto",
-          padding: 10,
+          flex:1,
+          overflowY:"auto",
+          padding:12,
         }}
       >
-        {messages.map((m, i) => (
+
+        {messages.map((m,i)=>(
+
           <div
             key={i}
             style={{
-              marginBottom: 10,
+              marginBottom:12,
               textAlign:
-                m.role === "user"
-                  ? "right"
-                  : "left",
+                m.role==="user"
+                  ?"right"
+                  :"left",
             }}
           >
+
             <div
               style={{
-                display: "inline-block",
-                padding: 10,
-                borderRadius: 8,
+                display:"inline-block",
+                padding:"10px 14px",
+                borderRadius:8,
                 background:
-                  m.role === "user"
-                    ? "#2563eb"
-                    : "#1f2937",
-                color: "#fff",
-                maxWidth: "90%",
+                  m.role==="user"
+                  ?"#2563eb"
+                  :"#1f2937",
               }}
             >
               {m.text}
             </div>
+
           </div>
+
         ))}
+
       </div>
 
       <div
         style={{
-          display: "flex",
-          borderTop: "1px solid #333",
+          display:"flex",
+          borderTop:"1px solid #374151",
         }}
       >
+
         <input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Nhập câu hỏi..."
+          onChange={(e)=>setInput(e.target.value)}
+          onKeyDown={(e)=>{
+            if(e.key==="Enter"){
+              send();
+            }
+          }}
+          placeholder="Ask AI..."
           style={{
-            flex: 1,
-            padding: 12,
-            border: "none",
-            outline: "none",
+            flex:1,
+            padding:12,
+            border:"none",
+            outline:"none",
+            background:"#0f172a",
+            color:"#fff",
           }}
         />
 
         <button
           onClick={send}
           style={{
-            width: 70,
+            padding:"0 20px",
           }}
         >
-          Gửi
+          Send
         </button>
+
       </div>
+
     </div>
+
   );
+
 }
