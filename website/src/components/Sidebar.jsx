@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export default function Sidebar({
   files,
   folders=[],
@@ -8,7 +10,17 @@ export default function Sidebar({
   renameFile,
   deleteFile,
 }) {
-  return (
+
+  const [open,setOpen]=useState({});
+
+  const toggle=(name)=>{
+    setOpen({
+      ...open,
+      [name]:!open[name],
+    });
+  };
+
+  return(
     <aside
       style={{
         width:220,
@@ -18,6 +30,7 @@ export default function Sidebar({
         borderRight:"1px solid #222",
       }}
     >
+
       <div
         style={{
           display:"flex",
@@ -40,103 +53,75 @@ export default function Sidebar({
         </button>
       </div>
 
-      {folders.map((folder)=>(
+      {folders.map(folder=>(
+
         <div key={folder}>
+
           <div
+            onClick={()=>toggle(folder)}
             style={{
+              cursor:"pointer",
               padding:"8px 10px",
               fontWeight:"bold",
             }}
           >
-            📁 {folder}
+            {open[folder] ? "📂" : "📁"} {folder}
           </div>
 
-          {Object.keys(files)
-            .filter(name=>name.startsWith(folder+"/"))
-            .map(name=>(
-              <div
-                key={name}
-                style={{
-                  padding:"6px 24px",
-                  cursor:"pointer",
-                  background:
-                    current===name
-                    ?"#374151"
-                    :"transparent",
-                }}
-              >
-                <div
-                  onClick={()=>setCurrent(name)}
-                >
-                  📄 {name.split("/").pop()}
-                </div>
+          {open[folder] &&
+            Object.keys(files)
+              .filter(f=>f.startsWith(folder+"/"))
+              .map(file=>(
 
                 <div
+                  key={file}
                   style={{
-                    display:"flex",
-                    gap:4,
-                    marginTop:4,
+                    padding:"6px 24px",
+                    background:
+                      current===file
+                      ?"#374151"
+                      :"transparent",
                   }}
                 >
-                  <button
-                    onClick={()=>renameFile(name)}
+                  <div
+                    onClick={()=>setCurrent(file)}
+                    style={{
+                      cursor:"pointer",
+                    }}
                   >
-                    ✏
-                  </button>
+                    📄 {file.split("/").pop()}
+                  </div>
 
-                  <button
-                    onClick={()=>deleteFile(name)}
+                  <div
+                    style={{
+                      display:"flex",
+                      gap:4,
+                      marginTop:4,
+                    }}
                   >
-                    🗑
-                  </button>
+                    <button
+                      onClick={()=>renameFile(file)}
+                    >
+                      ✏
+                    </button>
+
+                    <button
+                      onClick={()=>deleteFile(file)}
+                    >
+                      🗑
+                    </button>
+
+                  </div>
+
                 </div>
-              </div>
-            ))}
+
+              ))
+          }
+
         </div>
+
       ))}
 
-      <div style={{paddingTop:10}}>
-        {Object.keys(files)
-          .filter(name=>!name.includes("/"))
-          .map(name=>(
-            <div
-              key={name}
-              style={{
-                padding:"8px 10px",
-                background:
-                  current===name
-                  ?"#374151"
-                  :"transparent",
-              }}
-            >
-              <div
-                onClick={()=>setCurrent(name)}
-              >
-                📄 {name}
-              </div>
-
-              <div
-                style={{
-                  display:"flex",
-                  gap:4,
-                  marginTop:4,
-                }}
-              >
-                <button
-                  onClick={()=>renameFile(name)}
-                >
-                  ✏
-                </button>
-
-                <button
-                  onClick={()=>deleteFile(name)}
-                >
-                  🗑
-                </button>
-              </div>
-            </div>
-          ))}
-      </div>
     </aside>
   );
 }
