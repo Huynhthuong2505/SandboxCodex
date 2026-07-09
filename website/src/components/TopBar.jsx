@@ -1,8 +1,7 @@
 export default function TopBar({
-  run,
-  save,
-  download,
-  openExplorer,
+  createFile,
+  saveWorkspace,
+  runPreview,
 }) {
   return (
     <header
@@ -13,32 +12,28 @@ export default function TopBar({
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 8px",
+        padding: "0 10px",
         borderBottom: "1px solid #222",
       }}
     >
-      <button onClick={openExplorer}>
-        ☰
-      </button>
-
       <b>Sandbox CodeX</b>
 
       <div
         style={{
           display: "flex",
-          gap: 6,
+          gap: 8,
         }}
       >
-        <button onClick={run}>
-          ▶
+        <button onClick={createFile}>
+          📄
         </button>
 
-        <button onClick={save}>
+        <button onClick={saveWorkspace}>
           💾
         </button>
 
-        <button onClick={download}>
-          ⬇
+        <button onClick={runPreview}>
+          ▶
         </button>
       </div>
     </header>
