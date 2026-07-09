@@ -150,3 +150,21 @@ Go to the serverless function code in `/pages/api/revalidate.ts`. In the code co
 [vercel-github]: https://github.com/vercel/next.js/discussions
 [app-dir]: https://beta.nextjs.org/docs/routing/fundamentals#the-app-directory
 [presentation]: https://www.sanity.io/docs/presentation
+
+> ### Motivation
+> - Thêm một bản thiết kế tích hợp OpenAI Platform vào Sandbox CodeX để hiện thực hóa OpenClaw, một AI agent tự động chuyển intent người dùng thành ứng dụng production-ready trong sandbox. 
+> - Cung cấp blueprint cho kiến trúc agent, Tool Gateway, Sandbox Runtime, Workflow Engine và vòng lặp tự vá lỗi nhằm chuẩn hoá cách mô hình gọi công cụ, lưu trữ state và bảo vệ secrets.
+> 
+> ### Description
+> - Thêm file thiết kế chi tiết `docs/OPENAI_SANDBOX_INTEGRATION.md` mô tả pipeline, vai trò agent, Tool Gateway, data model, API routes, prompt contract, roadmap và tiêu chí MVP. 
+> - Cập nhật `README.md` để liệt kê và liên kết tới bản thiết kế `OpenAI Sandbox AI Integration` và chèn phần tóm tắt thiết kế. 
+> - Mở rộng `ARCHITECTURE.md` để thêm bố cục OpenClaw Orchestrator, `OpenAI Responses API / Agents SDK`, `Tool Gateway` và luồng Runtime→Deploy→Self-healing. 
+> - Mở rộng `AI_AGENT.md` để mô tả `OpenClaw` như agent trung tâm với vòng lặp `plan→code→run→observe→patch` và nhấn mạnh mô hình quản lý key backend-only và tool calls có audit.
+> 
+> ### Testing
+> - Chạy `git diff --check` để kiểm tra diff style và whitespace, kiểm tra này đã thành công. 
+> - Không có unit/integration test mới trong PR; thay đổi là tài liệu và nội dung mô tả kiến trúc nên không thay đổi runtime code paths.
+> 
+> ------
+> [Codex Task](https://chatgpt.com/codex/cloud/tasks/task_e_6a4f23b3d6188328b626f15437e27354)
+
