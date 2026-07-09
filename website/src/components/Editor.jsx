@@ -5,20 +5,34 @@ export default function CodeEditor({
   code,
   setCode,
 }) {
+
+  const theme =
+    localStorage.getItem("editor-theme") ||
+    "vs-dark";
+
+  const fontSize =
+    Number(
+      localStorage.getItem("editor-font-size")
+    ) || 15;
+
   return (
     <Editor
       height="100%"
-      theme="vs-dark"
       language={language}
       value={code}
-      onChange={(value) => setCode(value || "")}
+      theme={theme}
+      onChange={(value)=>setCode(value||"")}
       options={{
-        fontSize: 15,
-        automaticLayout: true,
-        minimap: {
-          enabled: true,
+        automaticLayout:true,
+        fontSize,
+        minimap:{
+          enabled:true,
         },
-        wordWrap: "on",
+        wordWrap:"on",
+        scrollBeyondLastLine:false,
+        smoothScrolling:true,
+        cursorBlink:"smooth",
+        tabSize:2,
       }}
     />
   );
