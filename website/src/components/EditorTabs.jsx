@@ -1,39 +1,56 @@
 export default function EditorTabs({
-  files,
+  openTabs,
   current,
   setCurrent,
+  closeTab,
 }) {
   return (
     <div
       style={{
-        display: "flex",
-        overflowX: "auto",
-        background: "#1f2937",
-        borderBottom: "1px solid #333",
-        whiteSpace: "nowrap",
+        display:"flex",
+        overflowX:"auto",
+        background:"#1f2937",
+        borderBottom:"1px solid #333",
       }}
     >
-      {Object.keys(files).map((name) => (
-        <button
+      {openTabs.map((name)=>(
+        <div
           key={name}
-          onClick={() => setCurrent(name)}
           style={{
-            padding: "10px 16px",
-            border: "none",
-            cursor: "pointer",
-            color: "#fff",
+            display:"flex",
+            alignItems:"center",
+            padding:"8px 12px",
+            color:"#fff",
             background:
-              current === name
-                ? "#374151"
-                : "transparent",
-            borderBottom:
-              current === name
-                ? "2px solid #3b82f6"
-                : "2px solid transparent",
+              current===name
+                ?"#374151"
+                :"transparent",
+            borderRight:"1px solid #333",
           }}
         >
-          📄 {name}
-        </button>
+          <span
+            onClick={()=>setCurrent(name)}
+            style={{
+              cursor:"pointer",
+              marginRight:8,
+              whiteSpace:"nowrap",
+            }}
+          >
+            📄 {name}
+          </span>
+
+          <button
+            onClick={()=>closeTab(name)}
+            style={{
+              border:"none",
+              background:"transparent",
+              color:"#fff",
+              cursor:"pointer",
+            }}
+          >
+            ✕
+          </button>
+        </div>
       ))}
     </div>
   );
