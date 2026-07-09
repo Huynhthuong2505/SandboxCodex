@@ -4,28 +4,28 @@ export default function AIChat() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: "Xin chào 👋 Tôi là Sandbox AI.",
+      text: "Xin chào 👋 Tôi là Sandbox AI.",
     },
   ]);
 
-  const [text, setText] = useState("");
+  const [input, setInput] = useState("");
 
   const send = () => {
-    if (!text.trim()) return;
+    if (!input.trim()) return;
 
     setMessages((m) => [
       ...m,
       {
         role: "user",
-        content: text,
+        text: input,
       },
       {
         role: "assistant",
-        content: "AI chưa được kết nối API.",
+        text: "AI chưa được kết nối API.",
       },
     ]);
 
-    setText("");
+    setInput("");
   };
 
   return (
@@ -49,17 +49,27 @@ export default function AIChat() {
             key={i}
             style={{
               marginBottom: 10,
-              padding: 10,
-              borderRadius: 8,
-              background:
+              textAlign:
                 m.role === "user"
-                  ? "#2563eb"
-                  : "#1f2937",
-              color: "#fff",
+                  ? "right"
+                  : "left",
             }}
           >
-            <b>{m.role}:</b><br />
-            {m.content}
+            <div
+              style={{
+                display: "inline-block",
+                padding: 10,
+                borderRadius: 8,
+                background:
+                  m.role === "user"
+                    ? "#2563eb"
+                    : "#1f2937",
+                color: "#fff",
+                maxWidth: "90%",
+              }}
+            >
+              {m.text}
+            </div>
           </div>
         ))}
       </div>
@@ -67,25 +77,25 @@ export default function AIChat() {
       <div
         style={{
           display: "flex",
-          padding: 8,
           borderTop: "1px solid #333",
         }}
       >
         <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Nhập tin nhắn..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Nhập câu hỏi..."
           style={{
             flex: 1,
-            padding: 10,
+            padding: 12,
+            border: "none",
+            outline: "none",
           }}
         />
 
         <button
           onClick={send}
           style={{
-            marginLeft: 8,
-            padding: "0 16px",
+            width: 70,
           }}
         >
           Gửi

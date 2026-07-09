@@ -1,0 +1,17 @@
+const renameFile = (oldName) => {
+  const newName = prompt("Tên mới", oldName);
+
+  if (!newName || newName === oldName || files[newName]) return;
+
+  const next = {};
+
+  Object.keys(files).forEach((key) => {
+    next[key === oldName ? newName : key] = files[key];
+  });
+
+  setFiles(next);
+
+  if (current === oldName) {
+    setCurrent(newName);
+  }
+};

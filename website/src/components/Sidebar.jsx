@@ -4,6 +4,7 @@ export default function Sidebar({
   setCurrent,
   createFile,
   deleteFile,
+  renameFile,
 }) {
   return (
     <aside
@@ -25,9 +26,7 @@ export default function Sidebar({
       >
         <b>EXPLORER</b>
 
-        <button onClick={createFile}>
-          +
-        </button>
+        <button onClick={createFile}>+</button>
       </div>
 
       {Object.keys(files).map((name) => (
@@ -35,10 +34,9 @@ export default function Sidebar({
           key={name}
           style={{
             display: "flex",
-            justifyContent: "space-between",
             alignItems: "center",
-            padding: "8px 10px",
-            cursor: "pointer",
+            gap: 6,
+            padding: 8,
             background:
               current === name
                 ? "#374151"
@@ -46,19 +44,27 @@ export default function Sidebar({
           }}
         >
           <span
-            style={{ flex: 1 }}
+            style={{
+              flex: 1,
+              cursor: "pointer",
+            }}
             onClick={() => setCurrent(name)}
           >
             📄 {name}
           </span>
 
           <button
-            onClick={() => deleteFile(name)}
-            style={{
-              marginLeft: 8,
-            }}
+            onClick={() => renameFile(name)}
+            title="Rename"
           >
-            🗑
+            ✏️
+          </button>
+
+          <button
+            onClick={() => deleteFile(name)}
+            title="Delete"
+          >
+            🗑️
           </button>
         </div>
       ))}
